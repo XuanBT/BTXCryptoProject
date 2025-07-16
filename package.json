@@ -41,5 +41,9 @@
       "json",
       "node"
     ]
+  },
+  "resolutions": {
+    "@types/react": "^18.0.21",
+    "@types/react-native": "^0.70.6"
   }
 }

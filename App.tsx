@@ -26,6 +26,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { Home } from './Home';
 
 const Section: React.FC<
   PropsWithChildren<{
@@ -91,6 +92,7 @@ const App = () => {
           <Section title="Learn More">
             Read the docs to discover what to do next:
           </Section>
+          <Home></Home>
           <LearnMoreLinks />
         </View>
       </ScrollView>
