@@ -77,7 +77,10 @@ export const HomePage = () => {
           <View style={homeStyles.candlestickContainer}>
             <View style={homeStyles.chatContainer}>
               <View style={homeStyles.chatWrapper}>
-              <Image style={homeStyles.chatImageContainer} source={require('../assets/Chart1.jpg')} />
+                <Image
+                  style={homeStyles.chatImageContainer}
+                  source={require('../assets/Chart1.jpg')}
+                />
               </View>
               <View style={homeStyles.baringContainer}>
                 <View style={homeStyles.baringContent}>
@@ -383,13 +386,13 @@ const homeStyles = StyleSheet.create({
     width: 290,
     height: 480,
     borderRadius: 12,
-    padding: 17,
+    // padding: 17,
     display: 'flex',
     backgroundColor: 'blue',
   },
   chatImageContainer: {
-    width: 256,
-    height: 445,
+    width: 290,
+    height: 480,
   },
   baringContainer: {
     width: 271,
@@ -422,7 +425,7 @@ const homeStyles = StyleSheet.create({
     backgroundColor: '#19204A',
     justifyContent: 'space-between',
     marginLeft: 15,
-    padding: 5
+    padding: 5,
   },
   footerSmallText: {
     fontSize: 8,
