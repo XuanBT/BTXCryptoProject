@@ -31,4 +31,5 @@ After clone source sucessfully, You should do many follow steps to run app on IO
   
   After set up environment variables successfully, you run below commands
     - cd <--Project folder-->
+    - open Android Studio and run an Android Virtual Device through Virtual Device Manager
     - npm run android or yarn android
