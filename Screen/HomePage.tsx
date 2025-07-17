@@ -1,7 +1,41 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {AppStyles} from '../common';
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {AppStyles, Format} from '../common';
+import {OrderBook} from '../common/Model/OrderBook';
+
 export const HomePage = () => {
+  const [orderBookList, setOrderBookList] = React.useState<OrderBook[]>([]);
+  const [tradesList, setTradesList] = React.useState<OrderBook[]>([]);
+  const [currencyText, setCurrencyText] = React.useState<String>('');
+  const [priceText, setPriceTextt] = React.useState<String>('');
+  React.useEffect(() => {
+    setOrderBookList(Format.generateOrderBook());
+    setTradesList(Format.generateOrderBook());
+    const interval = setInterval(() => {
+      const newData = Format.generateOrderBook();
+      const newTrade = Format.generateOrderBook();
+      setOrderBookList(newData);
+      setTradesList(newTrade);
+    }, 5000);
+    setCurrencyText('USD/BTC');
+    setPriceTextt('$66,360.55');
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const onChangeCurrent = () => {
+    setCurrencyText(currencyText === 'USD/BTC' ? 'EUR/BTC' : 'USD/BTC');
+    setPriceTextt(currencyText === 'USD/BTC' ? '€64,360.55' : '$66,360.55');
+  };
   return (
     <View style={homeStyles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
@@ -64,14 +98,16 @@ export const HomePage = () => {
                     AppStyles.textColor,
                     homeStyles.amountHightLightText,
                   ]}>
-                  $66,360.55
+                  {priceText}
                 </Text>
                 <Text style={[homeStyles.amountSmalText]}>(+1.25%)</Text>
               </View>
-              <View style={homeStyles.btcContainer}>
-                <Text style={[AppStyles.textColor]}>USD/BTC</Text>
-                <Image source={require('../assets/Down.png')} />
-              </View>
+              <TouchableOpacity onPress={onChangeCurrent}>
+                <View style={homeStyles.btcContainer}>
+                  <Text style={[AppStyles.textColor]}>{currencyText}</Text>
+                  <Image source={require('../assets/Down.png')} />
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={homeStyles.candlestickContainer}>
@@ -123,31 +159,30 @@ export const HomePage = () => {
                 </View>
                 <View style={homeStyles.orderBookContent}>
                   <View style={homeStyles.orderBookLeftContent}>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    {/* <Text style={homeStyles.orderBookLeftText}>253.11</Text> */}
-                    {/* <Text style={homeStyles.orderBookLeftText}>253.11</Text> */}
+                    {orderBookList &&
+                      orderBookList.length > 0 &&
+                      orderBookList.slice(0, 11).map((item, index) => {
+                        return (
+                          <Text
+                            key={`orderBookPrice_${index}`}
+                            style={homeStyles.orderBookLeftText}>
+                            {item.price}
+                          </Text>
+                        );
+                      })}
                   </View>
                   <View style={homeStyles.orderBookRightContent}>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    {/* <Text style={homeStyles.orderBookRightText}>0.001</Text> */}
+                    {orderBookList &&
+                      orderBookList.length > 0 &&
+                      orderBookList.slice(0, 11).map((item, index) => {
+                        return (
+                          <Text
+                            key={`orderBookAmount_${index}`}
+                            style={homeStyles.orderBookLeftText}>
+                            {item.amount}
+                          </Text>
+                        );
+                      })}
                   </View>
                 </View>
               </View>
@@ -158,31 +193,30 @@ export const HomePage = () => {
                 </View>
                 <View style={homeStyles.orderBookContent}>
                   <View style={homeStyles.orderBookLeftContent}>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    <Text style={homeStyles.orderBookLeftText}>253.11</Text>
-                    {/* <Text style={homeStyles.orderBookLeftText}>253.11</Text> */}
-                    {/* <Text style={homeStyles.orderBookLeftText}>253.11</Text> */}
+                    {tradesList &&
+                      tradesList.length > 0 &&
+                      tradesList.slice(0, 11).map((item, index) => {
+                        return (
+                          <Text
+                            key={`tradesPrice_${index}`}
+                            style={homeStyles.orderBookLeftText}>
+                            {item.price}
+                          </Text>
+                        );
+                      })}
                   </View>
                   <View style={homeStyles.orderBookRightContent}>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    <Text style={homeStyles.orderBookRightText}>0.001</Text>
-                    {/* <Text style={homeStyles.orderBookRightText}>0.001</Text> */}
+                    {tradesList &&
+                      tradesList.length > 0 &&
+                      tradesList.slice(0, 11).map((item, index) => {
+                        return (
+                          <Text
+                            key={`tradesAmount_${index}`}
+                            style={homeStyles.orderBookLeftText}>
+                            {item.amount}
+                          </Text>
+                        );
+                      })}
                   </View>
                 </View>
               </View>
@@ -195,12 +229,7 @@ export const HomePage = () => {
 };
 const homeStyles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // maxWidth: '100%',
-    // maxHeight: '100%',
     display: 'flex',
-    // flexDirection: 'row',
-    // backgroundColor: '#0f0'
   },
   topMenu: {
     width: 364,
@@ -209,8 +238,8 @@ const homeStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: 'green',
     marginLeft: 26,
+    marginTop: 10,
   },
   headerText: {
     fontSize: 11,
@@ -221,8 +250,6 @@ const homeStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     display: 'flex',
-    // flexDirection: 'row',
-    // justifyContent: 'space-between'
   },
   priceContainer: {
     display: 'flex',
@@ -245,7 +272,6 @@ const homeStyles = StyleSheet.create({
     flex: 50,
     display: 'flex',
     flexDirection: 'row',
-    // backgroundColor: '#0f0'
   },
   priceTableBorderLine: {
     borderBottomWidth: 1,
@@ -255,7 +281,6 @@ const homeStyles = StyleSheet.create({
     flex: 50,
     display: 'flex',
     flexDirection: 'column',
-    // backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -284,7 +309,6 @@ const homeStyles = StyleSheet.create({
     flexDirection: 'column',
     width: 134,
     height: 44,
-    // backgroundColor: 'red',
     alignItems: 'flex-end',
   },
   btcContainer: {
@@ -317,7 +341,6 @@ const homeStyles = StyleSheet.create({
     width: 290,
     height: '100%',
     display: 'flex',
-    // backgroundColor: '#0f0',
     backgroundColor: '#01041F',
   },
   order_tradesContainer: {
@@ -326,7 +349,6 @@ const homeStyles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    // backgroundColor: 'red',
   },
   orderBookContainer: {
     width: 87,
@@ -336,7 +358,6 @@ const homeStyles = StyleSheet.create({
   },
   orderBookLeftContent: {
     flex: 50,
-    // height: 311,
     display: 'flex',
     flexDirection: 'column',
   },
@@ -344,14 +365,12 @@ const homeStyles = StyleSheet.create({
     flex: 50,
     display: 'flex',
     flexDirection: 'column',
-    // backgroundColor: 'blue',
     alignItems: 'center',
   },
   orderBookContent: {
     flex: 50,
     display: 'flex',
     flexDirection: 'row',
-    // backgroundColor: 'green',
   },
   orderBookHeader: {
     display: 'flex',
