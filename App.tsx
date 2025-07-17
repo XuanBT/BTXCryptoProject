@@ -26,7 +26,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { Home } from './Home';
+import {HomePage} from './Screen/HomePage';
 
 const Section: React.FC<
   PropsWithChildren<{
@@ -66,20 +66,23 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
+    <View style={styles.container}>
+      <SafeAreaView>
+        <HomePage></HomePage>
+      </SafeAreaView>
+      {/* <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
+      /> */}
+      {/* <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
+        style={backgroundStyle}> */}
+      {/* <Header /> */}
+      {/* <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
+          }}> */}
+      {/* <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
           </Section>
@@ -91,16 +94,20 @@ const App = () => {
           </Section>
           <Section title="Learn More">
             Read the docs to discover what to do next:
-          </Section>
-          <Home></Home>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          </Section> */}
+
+      {/* <LearnMoreLinks /> */}
+      {/* </View> */}
+      {/* </ScrollView> */}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#01041F',
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
