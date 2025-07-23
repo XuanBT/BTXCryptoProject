@@ -2,7 +2,7 @@ import { OrderBook } from "../Model/OrderBook";
 
 export namespace Format {
   export const generateRandomOrder = (side: 'buy' | 'sell'): OrderBook => {
-    const price = parseFloat((Math.random() * 200 + 200).toFixed(2));
+    const price = parseFloat((Math.random() * 10 + 10).toFixed(2));
     const amount = parseFloat((Math.random() * 5 + 0.1).toFixed(3));
     return { price, amount, side };
   };

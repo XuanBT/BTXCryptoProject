@@ -1,44 +1,93 @@
 import React from 'react';
 import {
+  Dimensions,
   FlatList,
   Image,
+  ImageBackground,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import {AppStyles, Format} from '../common';
 import {OrderBook} from '../common/Model/OrderBook';
+import {CandlestickChart, LineChart, TData} from 'react-native-wagmi-charts';
+import {ChartConst} from './ChartConst';
 
 export const HomePage = () => {
   const [orderBookList, setOrderBookList] = React.useState<OrderBook[]>([]);
   const [tradesList, setTradesList] = React.useState<OrderBook[]>([]);
   const [currencyText, setCurrencyText] = React.useState<String>('');
   const [priceText, setPriceTextt] = React.useState<String>('');
+  // const [timePoint, setTimePoint] = React.useState('7D');
+  const [pageSize, setPageSize] = React.useState(10);
+  const {width, height} = useWindowDimensions();
   React.useEffect(() => {
     setOrderBookList(Format.generateOrderBook());
     setTradesList(Format.generateOrderBook());
     const interval = setInterval(() => {
       const newData = Format.generateOrderBook();
       const newTrade = Format.generateOrderBook();
+      setPageSize(val => val + 1);
       setOrderBookList(newData);
       setTradesList(newTrade);
     }, 5000);
+
     setCurrencyText('USD/BTC');
     setPriceTextt('$66,360.55');
     return () => {
       clearInterval(interval);
+      setPageSize(10);
     };
   }, []);
+
+  const chartData1 = React.useMemo(() => {
+    let pageNum = 0;
+    return ChartConst.ChartData.o
+      .slice(pageNum * pageSize, (pageNum + 1) * pageSize)
+      .map((item, index) => ({
+        timestamp: ChartConst.ChartData.t[pageNum * pageSize + index],
+        open: item,
+        high: ChartConst.ChartData.h[pageNum * pageSize + index],
+        low: ChartConst.ChartData.l[pageNum * pageSize + index],
+        close: ChartConst.ChartData.c[pageNum * pageSize + index],
+      }));
+  }, [pageSize]);
 
   const onChangeCurrent = () => {
     setCurrencyText(currencyText === 'USD/BTC' ? 'EUR/BTC' : 'USD/BTC');
     setPriceTextt(currencyText === 'USD/BTC' ? '€64,360.55' : '$66,360.55');
   };
+  const onChangeTimePointEvent = (type: string) => {
+    switch (type) {
+      case '7D':
+        setPageSize(10);
+        break;
+      case '1M':
+        setPageSize(15);
+        break;
+      case '3M':
+        setPageSize(20);
+        break;
+      case '1Y':
+        setPageSize(25);
+        break;
+      case '5Y':
+        setPageSize(30);
+        break;
+      default:
+        setPageSize(35);
+        break;
+    }
+  };
   return (
     <View style={homeStyles.container}>
-      <ScrollView showsVerticalScrollIndicator={true}>
+      <ScrollView
+        // showsVerticalScrollIndicator={true}
+        showsHorizontalScrollIndicator={true}>
         <View style={homeStyles.topMenu}>
           <View>
             <Image source={require('../assets/Menu.png')} />
@@ -113,10 +162,96 @@ export const HomePage = () => {
           <View style={homeStyles.candlestickContainer}>
             <View style={homeStyles.chatContainer}>
               <View style={homeStyles.chatWrapper}>
-                <Image
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  {/* <ImageBackground
+                    source={require('../assets/Graph.png')}
+                    style={homeStyles.chartImageBackground}
+                    resizeMode="contain"> */}
+                  <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={true}>
+                    <CandlestickChart.Provider data={chartData1}>
+                      <ImageBackground
+                        source={require('../assets/Graph.png')}
+                        style={homeStyles.chartImageBackground}
+                        resizeMode="contain">
+                        <CandlestickChart width={240} height={440}>
+                          <CandlestickChart.Candles
+                            positiveColor="#0f0"
+                            negativeColor={'#FF3F3F'}
+                          />
+                          {/* <CandlestickChart.Candle/> */}
+                          <CandlestickChart.Line
+                            color={'#9CB8FF'}
+                            x={290}
+                            y={200}
+                            x1={0}
+                            y1={200}
+                          />
+                          <CandlestickChart.Crosshair color="hotpink">
+                            <CandlestickChart.Tooltip />
+                          </CandlestickChart.Crosshair>
+                        </CandlestickChart>
+                      </ImageBackground>
+                    </CandlestickChart.Provider>
+                  </ScrollView>
+                  {/* </ImageBackground> */}
+                  <View style={homeStyles.chartRightContainer}>
+                    <Text style={homeStyles.chartRightText}>$20.5</Text>
+                    <Text style={homeStyles.chartRightText}>$19.5</Text>
+                    <Text style={homeStyles.chartRightText}>$19</Text>
+                    <Text style={homeStyles.chartRightText}>$18.5</Text>
+                    <Text style={homeStyles.chartRightText}>$18</Text>
+                    <Text style={homeStyles.chartRightText}>$17.5</Text>
+                    <Text style={homeStyles.chartRightText}>$17</Text>
+                    <Text style={homeStyles.chartRightText}>$16.5</Text>
+                    <Text style={homeStyles.chartRightText}>$16</Text>
+                    <Text style={homeStyles.chartRightText}>$15.5</Text>
+                    <Text style={homeStyles.chartRightText}>$15</Text>
+                  </View>
+                </View>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    onPress={() => onChangeTimePointEvent('7D')}>
+                    <View style={homeStyles.chartBottomContainer}>
+                      <Text style={homeStyles.chartBottomText}>7D</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onChangeTimePointEvent('1M')}>
+                    <View style={homeStyles.chartBottomContainer}>
+                      <Text style={homeStyles.chartBottomText}>1M</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onChangeTimePointEvent('3M')}>
+                    <View style={homeStyles.chartBottomContainer}>
+                      <Text style={homeStyles.chartBottomText}>3M</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onChangeTimePointEvent('1Y')}>
+                    <View style={homeStyles.chartBottomContainer}>
+                      <Text style={homeStyles.chartBottomText}>1Y</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onChangeTimePointEvent('5Y')}>
+                    <View style={homeStyles.chartBottomContainer}>
+                      <Text style={homeStyles.chartBottomText}>5Y</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onChangeTimePointEvent('Max')}>
+                    <View style={homeStyles.chartBottomContainer}>
+                      <Text style={homeStyles.chartBottomText}>Max</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                {/* <Image
                   style={homeStyles.chatImageContainer}
                   source={require('../assets/Chart1.jpg')}
-                />
+                /> */}
               </View>
               <View style={homeStyles.baringContainer}>
                 <View style={homeStyles.baringContent}>
@@ -229,7 +364,9 @@ export const HomePage = () => {
 };
 const homeStyles = StyleSheet.create({
   container: {
-    display: 'flex',
+    // display: 'flex',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
   topMenu: {
     width: 364,
@@ -339,8 +476,9 @@ const homeStyles = StyleSheet.create({
   },
   chatContainer: {
     width: 290,
-    height: '100%',
-    display: 'flex',
+    // height: '100%',
+    height: 480,
+    // display: 'flex',
     backgroundColor: '#01041F',
   },
   order_tradesContainer: {
@@ -405,13 +543,48 @@ const homeStyles = StyleSheet.create({
     width: 290,
     height: 480,
     borderRadius: 12,
-    // padding: 17,
-    display: 'flex',
-    backgroundColor: 'blue',
+    backgroundColor: '#13183C',
   },
-  chatImageContainer: {
-    width: 290,
-    height: 480,
+  chartImageContainer: {
+    // width: 290,
+    // height: 480,
+    transform: [{scaleX: -1}],
+  },
+  chartImageBackground: {
+    width: 240,
+    height: 440,
+    // backgroundColor: 'green',
+  },
+  chartRightContainer: {
+    width: 50,
+    height: 440,
+    paddingTop: Platform.OS === 'ios' ? 20 : 23,
+    display: 'flex',
+    flexDirection: 'column',
+    // backgroundColor: '#fff',
+  },
+  chartRightText: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#fff',
+    marginTop: Platform.OS === 'ios' ? 17 : 15,
+  },
+  chartBottomContainer: {
+    width: 35,
+    height: 35,
+    borderRadius: 4,
+    padding: 6,
+    marginRight: 10,
+    backgroundColor: '#152652',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chartBottomText: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#fff',
   },
   baringContainer: {
     width: 271,
