@@ -61,7 +61,7 @@ export const HomePage = () => {
 
   const initalForm = () => {
     tradingForm.setValue('currencyUnit', ChartConst.CurrentConst[0]);
-    tradingForm.setValue('mainPrice', '66,360.55');
+    tradingForm.setValue('mainPrice', '$66,360.55');
     tradingForm.setValue('highPrice', '53,952.01');
     tradingForm.setValue('lowPrice', '39,902.42');
   };
@@ -111,7 +111,7 @@ export const HomePage = () => {
       case 'USD/BTC':
         tradingForm.reset({
           ...tradingForm.watch(),
-          mainPrice: Format.formatNumberWithComma(oldMainPrice),
+          mainPrice: `$${Format.formatNumberWithComma(oldMainPrice)}`,
           highPrice: Format.formatNumberWithComma(oldHighPrice),
           lowPrice: Format.formatNumberWithComma(oldLowPrice),
         });
@@ -120,9 +120,9 @@ export const HomePage = () => {
         exchangeRate = 1.175;
         tradingForm.reset({
           ...tradingForm.watch(),
-          mainPrice: Format.formatNumberWithComma(
+          mainPrice: `€${Format.formatNumberWithComma(
             (oldMainPrice / exchangeRate).toFixed(2),
-          ),
+          )}`,
           highPrice: Format.formatNumberWithComma(
             (oldHighPrice / exchangeRate).toFixed(2),
           ),
@@ -135,9 +135,9 @@ export const HomePage = () => {
         exchangeRate = 1.347;
         tradingForm.reset({
           ...tradingForm.watch(),
-          mainPrice: Format.formatNumberWithComma(
+          mainPrice: `£${Format.formatNumberWithComma(
             (oldMainPrice / exchangeRate).toFixed(2),
-          ),
+          )}`,
           highPrice: Format.formatNumberWithComma(
             (oldHighPrice / exchangeRate).toFixed(2),
           ),
@@ -150,9 +150,9 @@ export const HomePage = () => {
           exchangeRate = 1.52;
           tradingForm.reset({
             ...tradingForm.watch(),
-            mainPrice: Format.formatNumberWithComma(
+            mainPrice: `$${Format.formatNumberWithComma(
               (oldMainPrice * exchangeRate).toFixed(2),
-            ),
+            )}`,
             highPrice: Format.formatNumberWithComma(
               (oldHighPrice * exchangeRate).toFixed(2),
             ),
@@ -233,7 +233,7 @@ export const HomePage = () => {
                     AppStyles.textColor,
                     homeStyles.amountHightLightText,
                   ]}>
-                  {`$${tradingForm.getValues('mainPrice')}`}
+                  {`${tradingForm.getValues('mainPrice')}`}
                 </Text>
                 <Text style={[homeStyles.amountSmalText]}>(+1.25%)</Text>
               </View>
