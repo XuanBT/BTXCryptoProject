@@ -1,0 +1,1 @@
+// import upload_cloud_img from './upload_cloud_img.svg'

@@ -15,4 +15,12 @@ export namespace Format {
     }
     return orders.sort((a, b) => b.price - a.price); // Highest price first
   };
+
+  export const formatNumberWithComma = (value: number | null | string): string => {
+    return value
+      ? Number(value)
+          .toString()
+          .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+      : '0'
+  }
 }

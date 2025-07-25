@@ -12,19 +12,35 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import {AppStyles, Format} from '../common';
+import {AppStyles, Format, assets} from '../common';
 import {OrderBook} from '../common/Model/OrderBook';
 import {CandlestickChart, LineChart, TData} from 'react-native-wagmi-charts';
 import {ChartConst} from './ChartConst';
+import {DropDownList, SearchedSelect} from '../common/Component';
+import {Controller, useForm} from 'react-hook-form';
+import {TradingFormData} from './TradingForm';
 
 export const HomePage = () => {
   const [orderBookList, setOrderBookList] = React.useState<OrderBook[]>([]);
   const [tradesList, setTradesList] = React.useState<OrderBook[]>([]);
-  const [currencyText, setCurrencyText] = React.useState<String>('');
-  const [priceText, setPriceTextt] = React.useState<String>('');
   // const [timePoint, setTimePoint] = React.useState('7D');
   const [pageSize, setPageSize] = React.useState(10);
   const {width, height} = useWindowDimensions();
+  const tradingForm = useForm<TradingFormData>({
+    defaultValues: {
+      currencyUnit: undefined,
+      mainPrice: '',
+      highPrice: '',
+      lowPrice: '',
+    },
+  });
+  const data = [
+    {label: 'One', value: '1'},
+    {label: 'Two', value: '2'},
+    {label: 'Three', value: '3'},
+    {label: 'Four', value: '4'},
+    {label: 'Five', value: '5'},
+  ];
   React.useEffect(() => {
     setOrderBookList(Format.generateOrderBook());
     setTradesList(Format.generateOrderBook());
@@ -35,14 +51,20 @@ export const HomePage = () => {
       setOrderBookList(newData);
       setTradesList(newTrade);
     }, 5000);
-
-    setCurrencyText('USD/BTC');
-    setPriceTextt('$66,360.55');
+    initalForm();
     return () => {
       clearInterval(interval);
       setPageSize(10);
+      tradingForm.reset();
     };
   }, []);
+
+  const initalForm = () => {
+    tradingForm.setValue('currencyUnit', ChartConst.CurrentConst[0]);
+    tradingForm.setValue('mainPrice', '66,360.55');
+    tradingForm.setValue('highPrice', '53,952.01');
+    tradingForm.setValue('lowPrice', '39,902.42');
+  };
 
   const chartData1 = React.useMemo(() => {
     let pageNum = 0;
@@ -57,10 +79,6 @@ export const HomePage = () => {
       }));
   }, [pageSize]);
 
-  const onChangeCurrent = () => {
-    setCurrencyText(currencyText === 'USD/BTC' ? 'EUR/BTC' : 'USD/BTC');
-    setPriceTextt(currencyText === 'USD/BTC' ? '€64,360.55' : '$66,360.55');
-  };
   const onChangeTimePointEvent = (type: string) => {
     switch (type) {
       case '7D':
@@ -81,6 +99,69 @@ export const HomePage = () => {
       default:
         setPageSize(35);
         break;
+    }
+  };
+
+  const onChangeCurrencyUnit = (type: string) => {
+    let oldMainPrice = 66360.55,
+      oldHighPrice = 53952.01,
+      oldLowPrice = 39902.42;
+    let exchangeRate = 0;
+    switch (type) {
+      case 'USD/BTC':
+        tradingForm.reset({
+          ...tradingForm.watch(),
+          mainPrice: Format.formatNumberWithComma(oldMainPrice),
+          highPrice: Format.formatNumberWithComma(oldHighPrice),
+          lowPrice: Format.formatNumberWithComma(oldLowPrice),
+        });
+        break;
+      case 'EUR/BTC':
+        exchangeRate = 1.175;
+        tradingForm.reset({
+          ...tradingForm.watch(),
+          mainPrice: Format.formatNumberWithComma(
+            (oldMainPrice / exchangeRate).toFixed(2),
+          ),
+          highPrice: Format.formatNumberWithComma(
+            (oldHighPrice / exchangeRate).toFixed(2),
+          ),
+          lowPrice: Format.formatNumberWithComma(
+            (oldLowPrice / exchangeRate).toFixed(2),
+          ),
+        });
+        break;
+      case 'GBP/BTC':
+        exchangeRate = 1.347;
+        tradingForm.reset({
+          ...tradingForm.watch(),
+          mainPrice: Format.formatNumberWithComma(
+            (oldMainPrice / exchangeRate).toFixed(2),
+          ),
+          highPrice: Format.formatNumberWithComma(
+            (oldHighPrice / exchangeRate).toFixed(2),
+          ),
+          lowPrice: Format.formatNumberWithComma(
+            (oldLowPrice / exchangeRate).toFixed(2),
+          ),
+        });
+        break;
+        case 'AUD/BTC':
+          exchangeRate = 1.52;
+          tradingForm.reset({
+            ...tradingForm.watch(),
+            mainPrice: Format.formatNumberWithComma(
+              (oldMainPrice * exchangeRate).toFixed(2),
+            ),
+            highPrice: Format.formatNumberWithComma(
+              (oldHighPrice * exchangeRate).toFixed(2),
+            ),
+            lowPrice: Format.formatNumberWithComma(
+              (oldLowPrice * exchangeRate).toFixed(2),
+            ),
+          });
+          break;
+      default:
     }
   };
   return (
@@ -114,13 +195,18 @@ export const HomePage = () => {
                     style={[homeStyles.priceTableText, homeStyles.hightText]}>
                     High
                   </Text>
-                  <Text style={AppStyles.textColor}>53,952.01</Text>
+                  <Text style={AppStyles.textColor}>{`${tradingForm.getValues(
+                    'highPrice',
+                  )}`}</Text>
                 </View>
                 <View style={homeStyles.priceTableContent}>
                   <Text style={[homeStyles.priceTableText, homeStyles.lowText]}>
                     Low
                   </Text>
-                  <Text style={AppStyles.textColor}>39,902.42</Text>
+                  <Text style={AppStyles.textColor}>
+                    {' '}
+                    {`${tradingForm.getValues('lowPrice')}`}
+                  </Text>
                 </View>
               </View>
               <View style={homeStyles.priceTableTopContent}>
@@ -147,16 +233,35 @@ export const HomePage = () => {
                     AppStyles.textColor,
                     homeStyles.amountHightLightText,
                   ]}>
-                  {priceText}
+                  {`$${tradingForm.getValues('mainPrice')}`}
                 </Text>
                 <Text style={[homeStyles.amountSmalText]}>(+1.25%)</Text>
               </View>
-              <TouchableOpacity onPress={onChangeCurrent}>
-                <View style={homeStyles.btcContainer}>
-                  <Text style={[AppStyles.textColor]}>{currencyText}</Text>
-                  <Image source={require('../assets/Down.png')} />
-                </View>
-              </TouchableOpacity>
+              <View style={homeStyles.currencyContainer}>
+                <Controller
+                  control={tradingForm.control}
+                  name={'currencyUnit'}
+                  render={({
+                    field: {onChange, onBlur, value},
+                    fieldState: {error},
+                  }) => (
+                    <SearchedSelect
+                      placeholder="Choose"
+                      value={value}
+                      options={ChartConst.CurrentConst}
+                      onChange={val => {
+                        onChange(val);
+                        onChangeCurrencyUnit(val?.value || '');
+                      }}
+                      onBlur={onBlur}
+                      containerStyle={homeStyles.selectContainer}
+                      dropDownStyle={homeStyles.selectContent}
+                      selectedTextStyle={homeStyles.selectedText}
+                      isRightIcon
+                    />
+                  )}
+                />
+              </View>
             </View>
           </View>
           <View style={homeStyles.candlestickContainer}>
@@ -396,6 +501,7 @@ const homeStyles = StyleSheet.create({
   priceTableContainer: {
     width: 175,
     height: 114,
+    flex: 50,
     display: 'flex',
     flexDirection: 'column',
     marginLeft: 20,
@@ -434,20 +540,33 @@ const homeStyles = StyleSheet.create({
     color: '#FFFFFF',
   },
   amountContainer: {
+    flex: 50,
+    width: '100%',
     height: 114,
-    paddingTop: 12,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    paddingRight: 10,
+    // backgroundColor: '#191f3f',
   },
   amountContent: {
     display: 'flex',
     flexDirection: 'column',
-    width: 134,
+    width: '100%',
     height: 44,
     alignItems: 'flex-end',
   },
+  currencyContainer: {
+    width: 101,
+    height: 34,
+    paddingHorizontal: 5,
+    borderRadius: 4,
+    backgroundColor: '#13183C',
+  },
+  selectContainer: {width: 90, height: 34},
+  selectContent: {width: 90, height: 34, borderBottomWidth: 0},
+  selectedText: {fontSize: 14, fontWeight: '400'},
   btcContainer: {
     width: 101,
     height: 34,
