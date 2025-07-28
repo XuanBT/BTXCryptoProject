@@ -23,7 +23,6 @@ import {TradingFormData} from './TradingForm';
 export const HomePage = () => {
   const [orderBookList, setOrderBookList] = React.useState<OrderBook[]>([]);
   const [tradesList, setTradesList] = React.useState<OrderBook[]>([]);
-  // const [timePoint, setTimePoint] = React.useState('7D');
   const [pageSize, setPageSize] = React.useState(10);
   const {width, height} = useWindowDimensions();
   const tradingForm = useForm<TradingFormData>({
@@ -353,10 +352,6 @@ export const HomePage = () => {
                     </View>
                   </TouchableOpacity>
                 </View>
-                {/* <Image
-                  style={homeStyles.chatImageContainer}
-                  source={require('../assets/Chart1.jpg')}
-                /> */}
               </View>
               <View style={homeStyles.baringContainer}>
                 <View style={homeStyles.baringContent}>
